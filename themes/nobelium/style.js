@@ -8,8 +8,8 @@ const Style = () => {
   return <style jsx global>{`
     
     // 底色
-    .dark body{
-        background-color: rgb(24 24 27);
+    .dark #theme-nobelium{
+        background-color: rgb(24 24 27) !important;
     }
 
   `}</style>
