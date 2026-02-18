@@ -20,7 +20,7 @@ export const ArticleInfo = (props) => {
             {post?.type !== 'Page' && <>
                 <nav className="flex mt-7 items-start text-gray-500 dark:text-gray-400">
                     <div className="flex mb-4">
-                        <a href={siteConfig('CONTACT_GITHUB', '#')} className="flex">
+                        <a href={siteConfig('CONTACT_TWITTER', '#')} className="flex">
                             <Image
                                 alt={siteConfig('AUTHOR')}
                                 width={24}
