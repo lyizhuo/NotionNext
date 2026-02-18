@@ -25,7 +25,8 @@ export const ArticleInfo = (props) => {
                                 alt={siteConfig('AUTHOR')}
                                 width={24}
                                 height={24}
-                                src={`https://gravatar.com/avatar/${emailHash}`}
+                                //src={`https://gravatar.com/avatar/${emailHash}`}
+                                src={`/author_avatar.webp`}
                                 className="rounded-full"
                             />
                             <p className="ml-2 md:block">{siteConfig('AUTHOR')}</p>
