@@ -8,6 +8,7 @@ import { GlobalStyle } from './GlobalStyle'
 import { initGoogleAdsense } from './GoogleAdsense'
 
 import Head from 'next/head'
+import Script from 'next/script'
 import ExternalScript from './ExternalScript'
 import WebWhiz from './Webwhiz'
 import { useGlobal } from '@/lib/global'
@@ -132,8 +133,8 @@ const ExternalPlugin = props => {
   const UMAMI_HOST = siteConfig('UMAMI_HOST', null, NOTION_CONFIG)
   const UMAMI_ID = siteConfig('UMAMI_ID', null, NOTION_CONFIG)
 
-  // 自定义样式css和js引入
-  if (isBrowser) {
+  useEffect(() => {
+    // 自定义样式css和js引入
     // 初始化AOS动画
     // 静态导入本地自定义样式
     loadExternalResource('/css/custom.css', 'css')
@@ -161,7 +162,7 @@ const ExternalPlugin = props => {
         loadExternalResource(url, 'css')
       }
     }
-  }
+  }, [])
 
   const router = useRouter()
   useEffect(() => {
@@ -226,7 +227,7 @@ const ExternalPlugin = props => {
 
       {ANALYTICS_51LA_ID && ANALYTICS_51LA_CK && (
         <>
-          <script id='LA_COLLECT' src='//sdk.51.la/js-sdk-pro.min.js' defer />
+          <Script id='LA_COLLECT' src='//sdk.51.la/js-sdk-pro.min.js' strategy='lazyOnload' />
           {/* <script async dangerouslySetInnerHTML={{
               __html: `
                     LA.init({id:"${ANALYTICS_51LA_ID}",ck:"${ANALYTICS_51LA_CK}",hashMode:true,autoTrack:true})
@@ -237,10 +238,10 @@ const ExternalPlugin = props => {
 
       {CHATBASE_ID && (
         <>
-          <script
+          <Script
             id={CHATBASE_ID}
             src='https://www.chatbase.co/embed.min.js'
-            defer
+            strategy='lazyOnload'
           />
           <script
             async
@@ -257,8 +258,9 @@ const ExternalPlugin = props => {
 
       {CLARITY_ID && (
         <>
-          <script
-            async
+          <Script
+            id='clarity-init'
+            strategy='afterInteractive'
             dangerouslySetInnerHTML={{
               __html: `
                 (function(c, l, a, r, i, t, y) {
@@ -284,8 +286,9 @@ const ExternalPlugin = props => {
       {COMMENT_DAO_VOICE_ID && (
         <>
           {/* DaoVoice 反馈 */}
-          <script
-            async
+          <Script
+            id='daovoice-init'
+            strategy='lazyOnload'
             dangerouslySetInnerHTML={{
               __html: `
                 (function(i, s, o, g, r, a, m) {
@@ -304,18 +307,11 @@ const ExternalPlugin = props => {
                   } else {
                     s.head.appendChild(a);
                   }
-                })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/daf1a94b.js", "daovoice")
-                `
-            }}
-          />
-          <script
-            async
-            dangerouslySetInnerHTML={{
-              __html: `
-             daovoice('init', {
-                app_id: "${COMMENT_DAO_VOICE_ID}"
-              });
-              daovoice('update');
+                })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/daf1a94b.js", "daovoice");
+                daovoice('init', {
+                  app_id: "${COMMENT_DAO_VOICE_ID}"
+                });
+                daovoice('update');
               `
             }}
           />
@@ -403,18 +399,25 @@ const ExternalPlugin = props => {
 
       {/* UMAMI 统计 */}
       {UMAMI_ID && (
-        <script async defer src={UMAMI_HOST} data-website-id={UMAMI_ID}></script>
+        <Script
+          async
+          defer
+          src={UMAMI_HOST}
+          data-website-id={UMAMI_ID}
+          strategy='lazyOnload'
+        />
       )}
 
       {/* 谷歌统计 */}
       {ANALYTICS_GOOGLE_ID && (
         <>
-          <script
-            async
+          <Script
+            strategy='afterInteractive'
             src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_GOOGLE_ID}`}
           />
-          <script
-            async
+          <Script
+            id='gtag-init'
+            strategy='afterInteractive'
             dangerouslySetInnerHTML={{
               __html: `
                 window.dataLayer = window.dataLayer || [];
@@ -431,8 +434,9 @@ const ExternalPlugin = props => {
 
       {/* Matomo 统计 */}
       {MATOMO_HOST_URL && MATOMO_SITE_ID && (
-        <script
-          async
+        <Script
+          id='matomo-init'
+          strategy='lazyOnload'
           dangerouslySetInnerHTML={{
             __html: `
               var _paq = window._paq = window._paq || [];
