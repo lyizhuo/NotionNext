@@ -60,10 +60,10 @@ const Catalog = ({ toc }) => {
   }
 
   return (
-    <div className='hidden lg:block absolute right-0 top-0 -mr-64 h-full'>
+    <div className='hidden lg:block absolute right-0 top-0 -mr-48 h-full'>
       <div className='pl-3 pr-0 sticky top-32'>
         <div
-          className='pl-10 mt-32 overflow-y-auto max-w-96  max-h-96 overscroll-none scroll-hidden'
+          className='pl-4 mt-32 overflow-y-auto max-w-52  max-h-96 overscroll-none scroll-hidden'
           ref={tRef}>
           <nav className='h-full text-black dark:text-gray-300'>
             {toc?.map(tocItem => {
@@ -73,14 +73,14 @@ const Catalog = ({ toc }) => {
                 <a
                   key={id}
                   href={`#${id}`}
-                  className={`${activeSection === id && 'dark:border-white border-gray-800 text-gray-800 font-bold'} hover:font-semibold border-l pl-4 block hover:text-gray-800 border-lduration-300 transform dark:text-gray-400 dark:border-gray-400
+                  className={`${activeSection === id && 'dark:border-white border-gray-800 text-gray-800 font-bold'} hover:font-semibold border-l pl-3 py-1 block hover:text-gray-800 duration-300 transform dark:text-gray-400 dark:border-gray-400
               notion-table-of-contents-item-indent-level-${tocItem.indentLevel} catalog-item `}>
                   <span
                     style={{
                       display: 'inline-block',
-                      marginLeft: tocItem.indentLevel * 16
+                      marginLeft: tocItem.indentLevel * 12
                     }}
-                    className={`truncate ${activeSection === id ? ' font-bold text-black dark:text-white underline' : ''}`}>
+                    className={`text-sm leading-snug break-words whitespace-normal ${activeSection === id ? ' font-bold text-black dark:text-white underline' : ''}  `}>
                     {tocItem.text}
                   </span>
                 </a>
