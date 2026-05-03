@@ -199,7 +199,7 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
 
-  // 默认将feed重定向至 /public/rss/feed.xml
+  // 默认将feed重定向至 /rss/feed.xml
   redirects: process.env.EXPORT
     ? undefined
     : () => {
