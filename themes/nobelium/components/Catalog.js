@@ -2,6 +2,32 @@ import throttle from 'lodash.throttle'
 import { uuidToId } from 'notion-utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+const ANIMATION_DURATION = 700
+
+/**
+ * 延迟卸载 hook，用于出场动画
+ */
+function useDelayedUnmount(show, duration = ANIMATION_DURATION) {
+  const [shouldRender, setShouldRender] = useState(show)
+  const [animationClass, setAnimationClass] = useState(show ? 'catalog-fade-in' : '')
+
+  useEffect(() => {
+    if (show) {
+      setShouldRender(true)
+      setAnimationClass('catalog-fade-in')
+    } else {
+      setAnimationClass('catalog-fade-out')
+      const timer = setTimeout(() => {
+        setShouldRender(false)
+        setAnimationClass('')
+      }, duration)
+      return () => clearTimeout(timer)
+    }
+  }, [show, duration])
+
+  return { shouldRender, animationClass }
+}
+
 /**
  * 目录导航组件
  * @param toc
@@ -9,14 +35,18 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * @constructor
  */
 const Catalog = ({ toc }) => {
+  const hasToc = toc && toc.length > 0
+  const { shouldRender, animationClass } = useDelayedUnmount(hasToc)
+
   // 监听滚动事件
   useEffect(() => {
+    if (!shouldRender) return
     window.addEventListener('scroll', actionSectionScrollSpy)
     actionSectionScrollSpy()
     return () => {
       window.removeEventListener('scroll', actionSectionScrollSpy)
     }
-  }, [])
+  }, [shouldRender])
 
   // 目录自动滚动
   const tRef = useRef(null)
@@ -54,16 +84,15 @@ const Catalog = ({ toc }) => {
     }, throttleMs)
   )
 
-  // 无目录就直接返回空
-  if (!toc || toc.length < 1) {
+  if (!shouldRender) {
     return <></>
   }
 
   return (
-    <div className='hidden lg:block absolute right-0 top-0 -mr-48 h-full'>
-      <div className='pl-3 pr-0 sticky top-32'>
+    <div className={`hidden lg:block w-48 shrink-0 ${animationClass}`}>
+      <div className='sticky top-32'>
         <div
-          className='pl-4 mt-32 overflow-y-auto max-w-52  max-h-96 overscroll-none scroll-hidden'
+          className='pl-4 mt-32 overflow-y-auto max-w-52 max-h-96 overscroll-none scroll-hidden'
           ref={tRef}>
           <nav className='h-full text-black dark:text-gray-300'>
             {toc?.map(tocItem => {

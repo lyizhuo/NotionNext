@@ -44,7 +44,6 @@ export const useNobeliumGlobal = () => useContext(ThemeGlobalNobelium)
  */
 const LayoutBase = props => {
   const { children, post } = props
-  const fullWidth = post?.fullWidth ?? false
   const { onLoading } = useGlobal()
   const searchModal = useRef(null)
   // 在列表中进行实时过滤
@@ -65,22 +64,28 @@ const LayoutBase = props => {
         {/* 主区 */}
         <main
           id='out-wrapper'
-          className={`relative m-auto flex-grow w-full transition-all ${!fullWidth ? 'max-w-2xl px-4' : 'px-4 md:px-24'}`}>
-          <Transition
-            show={!onLoading}
-            appear={true}
-            enter='transition ease-in-out duration-700 transform order-first'
-            enterFrom='opacity-0 translate-y-16'
-            enterTo='opacity-100'
-            leave='transition ease-in-out duration-300 transform'
-            leaveFrom='opacity-100 translate-y-0'
-            leaveTo='opacity-0 -translate-y-16'
-            unmount={false}>
-            {/* 顶部插槽 */}
-            {topSlot}
-            {children}
+          className='relative m-auto flex-grow w-full px-4'>
+          <div className='flex gap-8'>
+            <div className='flex-1 min-w-0'>
+              <div className='max-w-2xl mx-auto'>
+                <Transition
+                  show={!onLoading}
+                  appear={true}
+                  enter='transition ease-in-out duration-700 transform order-first'
+                  enterFrom='opacity-0 translate-y-16'
+                  enterTo='opacity-100'
+                  leave='transition ease-in-out duration-300 transform'
+                  leaveFrom='opacity-100 translate-y-0'
+                  leaveTo='opacity-0 -translate-y-16'
+                  unmount={false}>
+                  {/* 顶部插槽 */}
+                  {topSlot}
+                  {children}
+                </Transition>
+              </div>
+            </div>
             {post && <Catalog toc={post?.toc} />}
-          </Transition>
+          </div>
         </main>
 
         {/* 页脚 */}

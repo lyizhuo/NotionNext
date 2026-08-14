@@ -309,3 +309,33 @@ img {
     background-position: right
   }
 }
+
+@keyframes catalog-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(4rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.catalog-fade-in {
+  animation: catalog-fade-in 700ms ease-in-out both;
+}
+
+@keyframes catalog-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4rem);
+  }
+}
+
+.catalog-fade-out {
+  animation: catalog-fade-out 300ms ease-in-out both;
+}
