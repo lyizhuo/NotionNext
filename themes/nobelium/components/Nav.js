@@ -174,9 +174,11 @@ const NavBar = props => {
         <RandomPostButton {...props} />
       )}
       {siteConfig('NOBELIUM_MENU_SEARCH_BUTTON') && <SearchButton {...props} />}
-      <i
+      <div
         onClick={toggleOpen}
-        className='fas fa-bars cursor-pointer px-5 flex justify-center items-center md:hidden'></i>
+        className='cursor-pointer w-10 h-10 flex justify-center items-center md:hidden'>
+        <i className='fas fa-bars'></i>
+      </div>
     </div>
   )
 }
