@@ -51,7 +51,7 @@ const TopBlur = forwardRef((_, ref) => (
       <div
         key={index}
         // 向左右溢出，避免 Safari 在 backdrop blur 结束处画出硬边
-        className='absolute inset-y-0 -inset-x-8'
+        className='top-blur-layer absolute inset-y-0 -inset-x-8'
         style={{
           zIndex: index + 1,
           backdropFilter: `blur(${layer.blur.toFixed(2)}px)`,
