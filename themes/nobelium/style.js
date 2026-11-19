@@ -25,6 +25,11 @@ const Style = () => {
         backdrop-filter: none;
     }
 
+    // 吸顶后原来的 1px 分割线会截断模糊过渡，隐藏它
+    #theme-nobelium .sticky-nav-full{
+        border-bottom-color: transparent !important;
+    }
+
 
       ${themeConsoleStyle('nobelium', CONFIG)}
   `}</style>
