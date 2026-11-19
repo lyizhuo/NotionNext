@@ -25,6 +25,16 @@ const Style = () => {
         backdrop-filter: none;
     }
 
+    // 模糊显隐与导航宽度使用同一组时长和缓动，避免两个 state 不同步
+    #theme-nobelium .top-blur{
+        opacity: 0;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0, 1);
+    }
+
+    #theme-nobelium .top-blur.top-blur-visible{
+        opacity: 1;
+    }
+
     // 吸顶后原来的 1px 分割线会截断模糊过渡，隐藏它
     #theme-nobelium .sticky-nav-full{
         border-bottom-color: transparent !important;
