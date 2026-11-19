@@ -9,13 +9,8 @@ import { themeConsoleStyle } from '@/lib/themeConsoleStyle'
 const Style = () => {
   return <style jsx global>{`
 
-    // 底色与顶部渐进模糊的遮罩颜色
-    #theme-nobelium{
-        --nobelium-top-blur-rgb: 255 255 255;
-    }
-
+    // 深色模式底色
     .dark #theme-nobelium{
-        --nobelium-top-blur-rgb: 24 24 27;
         background-color: rgb(24 24 27) !important;
     }
 
