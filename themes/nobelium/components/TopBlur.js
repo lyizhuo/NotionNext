@@ -58,7 +58,7 @@ const veilMask = `linear-gradient(to bottom, ${Array.from(
 const TopBlur = ({ visible }) => (
   <div
     aria-hidden
-    className={`pointer-events-none fixed inset-x-0 top-0 z-[9] h-32 overflow-hidden transition-opacity duration-500 md:h-36 ${
+    className={`pointer-events-none fixed inset-x-0 top-0 z-[9] h-20 overflow-hidden transition-opacity duration-500 md:h-24 ${
       visible ? 'opacity-100' : 'opacity-0'
     }`}
   >
