@@ -25,9 +25,10 @@ const Nav = props => {
 
   const navRef = useRef(null)
   const sentinalRef = useRef([])
-  const [stuck, setStuck] = useState(false)
+  const blurRef = useRef(null)
   const handler = ([entry]) => {
-    setStuck(!entry?.isIntersecting)
+    const isStuck = !entry?.isIntersecting
+    blurRef.current?.classList.toggle('top-blur-visible', isStuck)
     if (navRef && navRef.current && autoCollapseNavBar) {
       if (!entry?.isIntersecting) {
         navRef.current?.classList.add('sticky-nav-full')
@@ -47,7 +48,7 @@ const Nav = props => {
   }, [sentinalRef])
   return (
     <>
-      <TopBlur visible={stuck} />
+      <TopBlur blurRef={blurRef} />
       <div className='observer-element h-4 md:h-12' ref={sentinalRef}></div>
       <div
         className={`sticky-nav m-auto w-full h-6 flex flex-row justify-between items-center mb-2 md:mb-12 py-8 bg-opacity-60 ${

@@ -53,14 +53,13 @@ const veilMask = `linear-gradient(to bottom, ${Array.from(
 
 /**
  * 顶部渐进模糊层，不参与布局；需要时放在 fixed 导航下方
- * @param {boolean} visible
+ * @param {object} blurRef 由 Nav 控制显隐，和导航宽度动画同步切换
  */
-const TopBlur = ({ visible }) => (
+const TopBlur = ({ blurRef }) => (
   <div
+    ref={blurRef}
     aria-hidden
-    className={`pointer-events-none fixed inset-x-0 top-0 z-[9] h-20 overflow-hidden transition-opacity duration-500 md:h-24 ${
-      visible ? 'opacity-100' : 'opacity-0'
-    }`}
+    className='top-blur pointer-events-none fixed inset-x-0 top-0 z-[9] h-20 overflow-hidden md:h-24'
   >
     {/* 底色放在模糊层下面，让模糊层把它的淡出一起抹平 */}
     <div
