@@ -38,21 +38,9 @@ const blurLayers = Array.from({ length: BLUR_LAYERS }, (_, index) => {
   }
 })
 
-// 底色遮罩：前 1rem 保持不透明，其余用多段余弦缓动淡出
-const veilSteps = 32
-const veilMask = `linear-gradient(to bottom, ${Array.from(
-  { length: veilSteps + 1 },
-  (_, i) => {
-    const t = i / veilSteps
-    const alpha = (1 + Math.cos(Math.PI * t)) / 2
-    return `rgb(0 0 0 / ${alpha.toFixed(
-      3
-    )}) calc(1rem + (100% - 1rem) * ${t.toFixed(3)})`
-  }
-).join(', ')})`
-
 /**
  * 顶部渐进模糊层，不参与布局；需要时放在 fixed 导航下方
+ * 只用 backdrop-filter，不再叠加白色/黑色遮罩色块
  * @param {object} blurRef 由 Nav 控制显隐，和导航宽度动画同步切换
  */
 const TopBlur = ({ blurRef }) => (
@@ -61,15 +49,6 @@ const TopBlur = ({ blurRef }) => (
     aria-hidden
     className='top-blur pointer-events-none fixed inset-x-0 top-0 z-[9] h-20 overflow-hidden md:h-24'
   >
-    {/* 底色放在模糊层下面，让模糊层把它的淡出一起抹平 */}
-    <div
-      className='absolute inset-0'
-      style={{
-        backgroundColor: 'rgb(var(--nobelium-top-blur-rgb))',
-        maskImage: veilMask,
-        WebkitMaskImage: veilMask
-      }}
-    />
     {blurLayers.map((layer, index) => (
       <div
         key={index}
