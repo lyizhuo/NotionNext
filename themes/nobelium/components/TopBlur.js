@@ -1,3 +1,5 @@
+import { forwardRef } from 'react'
+
 // 顶部边缘从强到弱分成 7 个模糊层。每层只承担一段“方差增量”，
 // 叠加后的总方差等于该位置的目标模糊半径，避免顶部附近叠出更大的模糊
 const BLUR_LAYERS = 7
@@ -38,11 +40,10 @@ const blurLayers = Array.from({ length: BLUR_LAYERS }, (_, index) => {
 /**
  * 顶部渐进模糊层，不参与布局；需要时放在 fixed 导航下方
  * 只用 backdrop-filter，不再叠加白色/黑色遮罩色块
- * @param {object} blurRef 由 Nav 控制显隐，和导航宽度动画同步切换
  */
-const TopBlur = ({ blurRef }) => (
+const TopBlur = forwardRef((_, ref) => (
   <div
-    ref={blurRef}
+    ref={ref}
     aria-hidden
     className='top-blur pointer-events-none fixed inset-x-0 top-0 z-[9] h-20 overflow-hidden md:h-24'
   >
@@ -61,6 +62,8 @@ const TopBlur = ({ blurRef }) => (
       />
     ))}
   </div>
-)
+))
+
+TopBlur.displayName = 'TopBlur'
 
 export default TopBlur
