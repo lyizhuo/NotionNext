@@ -9,9 +9,20 @@ import { themeConsoleStyle } from '@/lib/themeConsoleStyle'
 const Style = () => {
   return <style jsx global>{`
 
-    // 底色
+    // 底色与顶部渐进模糊的遮罩颜色
+    #theme-nobelium{
+        --nobelium-top-blur-rgb: 255 255 255;
+    }
+
     .dark #theme-nobelium{
+        --nobelium-top-blur-rgb: 24 24 27;
         background-color: rgb(24 24 27) !important;
+    }
+
+    // 顶部渐进模糊已经提供多层模糊，关掉导航自带的单层模糊避免叠加
+    #theme-nobelium .sticky-nav{
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
     }
 
 
