@@ -14,8 +14,9 @@ const Style = () => {
         background-color: rgb(24 24 27) !important;
     }
 
-    // 顶部渐进模糊已经提供多层模糊，关掉导航自带的单层模糊避免叠加
-    #theme-nobelium .sticky-nav{
+    // 顶部渐进模糊可见时才关掉导航自身的单层模糊；
+    // 隐藏态或异常情况下保留它作为兜底
+    #theme-nobelium .top-blur-visible ~ .sticky-nav{
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
@@ -30,6 +31,16 @@ const Style = () => {
 
     #theme-nobelium .top-blur-visible .top-blur-layer{
         opacity: 1;
+    }
+
+    @media (prefers-reduced-transparency: reduce){
+        #theme-nobelium .top-blur-layer{
+            display: none;
+        }
+        #theme-nobelium .top-blur-visible ~ .sticky-nav{
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
     }
 
     // 吸顶后原来的 1px 分割线会截断模糊过渡，隐藏它
