@@ -1,9 +1,7 @@
-// 顶部边缘从强到弱分成 7 个模糊带，每层只在自己的区间内生效，
-// 相邻带用重叠的渐变交接，避免所有层同时从顶部淡出造成断层
+// 顶部边缘从强到弱分成 7 个模糊层。每层只承担一段“方差增量”，
+// 叠加后的总方差等于该位置的目标模糊半径，避免顶部附近叠出更大的模糊
 const BLUR_LAYERS = 7
 const MAX_BLUR = 8
-const BAND = 100 / 8
-const BLUR_RATIO = 1.5
 
 /** 生成带缓动的 mask 过渡，避免线性 stop 在端点留下折线 */
 const smoothRamp = (from, to, fromAlpha, toAlpha, steps = 4) =>
@@ -15,25 +13,24 @@ const smoothRamp = (from, to, fromAlpha, toAlpha, steps = 4) =>
     return `rgb(0 0 0 / ${alpha.toFixed(3)}) ${pos.toFixed(2)}%`
   })
 
-// 渲染顺序从弱到强，最强层最后绘制；level 0 对应顶部最强模糊
+// 渲染顺序从弱到强，最强层最后绘制。每层的 sigma 按
+// sqrt(to² - from²) 取值，使叠加后的总模糊正好落在 to
 const blurLayers = Array.from({ length: BLUR_LAYERS }, (_, index) => {
-  const level = BLUR_LAYERS - index - 1
-  const start = level === 0 ? 0 : (level - 1) * BAND
-  const fullStart = level * BAND
-  const fullEnd = (level + 1) * BAND
-  const end = Math.min(100, (level + 2) * BAND)
-  const stops = []
+  const level = index + 1
+  const from = (MAX_BLUR * (level - 1)) / BLUR_LAYERS
+  const to = (MAX_BLUR * level) / BLUR_LAYERS
+  const sigma = Math.sqrt(to * to - from * from)
+  const fullUntil = 100 * (1 - to / MAX_BLUR)
+  const fadeUntil = 100 * (1 - from / MAX_BLUR)
+  const stops = ['rgb(0 0 0) 0%']
 
-  if (level === 0) {
-    stops.push('rgb(0 0 0) 0%')
-  } else {
-    stops.push(...smoothRamp(start, fullStart, 0, 1))
+  if (fullUntil > 0) {
+    stops.push(`rgb(0 0 0) ${fullUntil.toFixed(2)}%`)
   }
-  stops.push(`rgb(0 0 0) ${fullEnd.toFixed(2)}%`)
-  stops.push(...smoothRamp(fullEnd, end, 1, 0))
+  stops.push(...smoothRamp(fullUntil, fadeUntil, 1, 0))
 
   return {
-    blur: MAX_BLUR / Math.pow(BLUR_RATIO, level),
+    blur: sigma,
     mask: `linear-gradient(to bottom, ${stops.join(', ')})`
   }
 })
