@@ -20,14 +20,15 @@ const Style = () => {
         backdrop-filter: none;
     }
 
-    // 隐藏时保留 1% 透明度，让 7 层 backdrop-filter 常驻合成器；
-    // 否则首次显示时要现场创建滤镜层，会出现约 100ms 的空白延迟
-    #theme-nobelium .top-blur{
+    // backdrop-filter 不能靠父级 opacity 淡入：父级 opacity < 1 会形成
+    // backdrop root，模糊会直接消失，直到父级 opacity 回到 1。
+    // 因此逐层淡入；隐藏态保留 1% 让滤镜层常驻，避免首次显示时再创建。
+    #theme-nobelium .top-blur-layer{
         opacity: 0.01;
         transition: opacity 0.15s cubic-bezier(0.4, 0, 0, 1);
     }
 
-    #theme-nobelium .top-blur.top-blur-visible{
+    #theme-nobelium .top-blur-visible .top-blur-layer{
         opacity: 1;
     }
 
