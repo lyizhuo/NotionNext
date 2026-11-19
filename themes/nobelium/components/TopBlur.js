@@ -1,20 +1,51 @@
-// 多层 backdrop-filter 叠加：越强的模糊越早淡出，形成自上而下的渐进模糊
-const blurLayers = [
-  { blur: 0.5, end: 100 },
-  { blur: 1, end: 85 },
-  { blur: 2, end: 70 },
-  { blur: 4, end: 55 },
-  { blur: 8, end: 40 }
-]
+// 顶部边缘从强到弱分成 7 个模糊带，每层只在自己的区间内生效，
+// 相邻带用重叠的渐变交接，避免所有层同时从顶部淡出造成断层
+const BLUR_LAYERS = 7
+const MAX_BLUR = 8
+const BAND = 100 / 8
+const BLUR_RATIO = 1.5
 
-// 底色遮罩：状态栏高度内保持不透明，其余部分用余弦缓动淡出，避免出现色带
-const veilSteps = 12
-const veil = `linear-gradient(to bottom, ${Array.from(
+/** 生成带缓动的 mask 过渡，避免线性 stop 在端点留下折线 */
+const smoothRamp = (from, to, fromAlpha, toAlpha, steps = 4) =>
+  Array.from({ length: steps + 1 }, (_, index) => {
+    const t = index / steps
+    const eased = (1 - Math.cos(Math.PI * t)) / 2
+    const alpha = fromAlpha + (toAlpha - fromAlpha) * eased
+    const pos = from + (to - from) * t
+    return `rgb(0 0 0 / ${alpha.toFixed(3)}) ${pos.toFixed(2)}%`
+  })
+
+// 渲染顺序从弱到强，最强层最后绘制；level 0 对应顶部最强模糊
+const blurLayers = Array.from({ length: BLUR_LAYERS }, (_, index) => {
+  const level = BLUR_LAYERS - index - 1
+  const start = level === 0 ? 0 : (level - 1) * BAND
+  const fullStart = level * BAND
+  const fullEnd = (level + 1) * BAND
+  const end = Math.min(100, (level + 2) * BAND)
+  const stops = []
+
+  if (level === 0) {
+    stops.push('rgb(0 0 0) 0%')
+  } else {
+    stops.push(...smoothRamp(start, fullStart, 0, 1))
+  }
+  stops.push(`rgb(0 0 0) ${fullEnd.toFixed(2)}%`)
+  stops.push(...smoothRamp(fullEnd, end, 1, 0))
+
+  return {
+    blur: MAX_BLUR / Math.pow(BLUR_RATIO, level),
+    mask: `linear-gradient(to bottom, ${stops.join(', ')})`
+  }
+})
+
+// 底色遮罩：前 1rem 保持不透明，其余用多段余弦缓动淡出
+const veilSteps = 32
+const veilMask = `linear-gradient(to bottom, ${Array.from(
   { length: veilSteps + 1 },
   (_, i) => {
     const t = i / veilSteps
     const alpha = (1 + Math.cos(Math.PI * t)) / 2
-    return `rgb(var(--nobelium-top-blur-rgb) / ${alpha.toFixed(
+    return `rgb(0 0 0 / ${alpha.toFixed(
       3
     )}) calc(1rem + (100% - 1rem) * ${t.toFixed(3)})`
   }
@@ -31,20 +62,29 @@ const TopBlur = ({ visible }) => (
       visible ? 'opacity-100' : 'opacity-0'
     }`}
   >
-    {blurLayers.map(({ blur, end }) => (
+    {/* 底色放在模糊层下面，让模糊层把它的淡出一起抹平 */}
+    <div
+      className='absolute inset-0'
+      style={{
+        backgroundColor: 'rgb(var(--nobelium-top-blur-rgb))',
+        maskImage: veilMask,
+        WebkitMaskImage: veilMask
+      }}
+    />
+    {blurLayers.map((layer, index) => (
       <div
-        key={blur}
+        key={index}
         // 向左右溢出，避免 Safari 在 backdrop blur 结束处画出硬边
         className='absolute inset-y-0 -inset-x-8'
         style={{
-          backdropFilter: `blur(${blur}px)`,
-          WebkitBackdropFilter: `blur(${blur}px)`,
-          maskImage: `linear-gradient(to bottom, black, transparent ${end}%)`,
-          WebkitMaskImage: `linear-gradient(to bottom, black, transparent ${end}%)`
+          zIndex: index + 1,
+          backdropFilter: `blur(${layer.blur.toFixed(2)}px)`,
+          WebkitBackdropFilter: `blur(${layer.blur.toFixed(2)}px)`,
+          maskImage: layer.mask,
+          WebkitMaskImage: layer.mask
         }}
       />
     ))}
-    <div className='absolute inset-0' style={{ backgroundImage: veil }} />
   </div>
 )
 
