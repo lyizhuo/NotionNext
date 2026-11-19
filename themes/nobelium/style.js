@@ -20,10 +20,11 @@ const Style = () => {
         backdrop-filter: none;
     }
 
-    // 模糊显隐与导航宽度使用同一组时长和缓动，避免两个 state 不同步
+    // 隐藏时保留 1% 透明度，让 7 层 backdrop-filter 常驻合成器；
+    // 否则首次显示时要现场创建滤镜层，会出现约 100ms 的空白延迟
     #theme-nobelium .top-blur{
-        opacity: 0;
-        transition: opacity 0.5s cubic-bezier(0.4, 0, 0, 1);
+        opacity: 0.01;
+        transition: opacity 0.15s cubic-bezier(0.4, 0, 0, 1);
     }
 
     #theme-nobelium .top-blur.top-blur-visible{
